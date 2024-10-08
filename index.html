@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteador de Grupos</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Sorteador de Grupos</h1>
+        <textarea id="nomes" rows="10" placeholder="Digite os nomes, um por linha"></textarea>
+        
+        <div class="options">
+            <label for="groupType">Tipo de divisão:</label>
+            <select id="groupType">
+                <option value="numGrupos">Dividir em número de grupos</option>
+                <option value="numMembros">Dividir por número de membros</option>
+            </select>
+            <input type="number" id="groupSize" placeholder="Número" min="1">
+        </div>
+        
+        <button id="sortear">Sortear</button>
+        
+        <div id="resultado"></div>
+        
+        <button id="downloadPDF">Baixar PDF - inoperante ainda</button>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
