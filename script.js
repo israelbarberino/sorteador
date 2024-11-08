@@ -1,3 +1,4 @@
+// Evento de sortear grupos
 document.getElementById('sortear').addEventListener('click', function() {
     const nomes = document.getElementById('nomes').value.trim().split('\n');
     const tipoDivisao = document.getElementById('groupType').value;
@@ -13,16 +14,15 @@ document.getElementById('sortear').addEventListener('click', function() {
 
     let grupos = [];
     if (tipoDivisao === 'numGrupos') {
-        const numGrupos = tamanhoGrupo;
-        grupos = dividirEmGrupos(nomes, numGrupos, 'grupos');
+        grupos = dividirEmGrupos(nomes, tamanhoGrupo, 'grupos');
     } else {
-        const numMembros = tamanhoGrupo;
-        grupos = dividirEmGrupos(nomes, numMembros, 'membros');
+        grupos = dividirEmGrupos(nomes, tamanhoGrupo, 'membros');
     }
 
     mostrarResultado(grupos);
 });
 
+// Função para dividir os nomes em grupos
 function dividirEmGrupos(nomes, tamanho, tipo) {
     let grupos = [];
     if (tipo === 'grupos') {
@@ -42,9 +42,10 @@ function dividirEmGrupos(nomes, tamanho, tipo) {
     return grupos;
 }
 
+// Função para mostrar o resultado na tela
 function mostrarResultado(grupos) {
     const resultadoDiv = document.getElementById('resultado');
-    resultadoDiv.innerHTML = '';
+    resultadoDiv.innerHTML = '';  // Limpa o conteúdo anterior
     grupos.forEach((grupo, index) => {
         const grupoDiv = document.createElement('div');
         grupoDiv.innerHTML = `<h3>Grupo ${index + 1}</h3><p>${grupo.join(', ')}</p>`;
@@ -52,31 +53,25 @@ function mostrarResultado(grupos) {
     });
 }
 
-/*
-document.getElementById('downloadPDF').addEventListener('click', function() {
-    const doc = new jsPDF();
-    let content = '';
-
-    const grupos = document.querySelectorAll('#resultado div');
-    grupos.forEach(grupo => {
-        content += grupo.innerText + '\n\n';
-    });
-
-    doc.text(content, 10, 10);
-    doc.save('resultado.pdf');
+// Função para testar a API
+document.getElementById('testeAPI').addEventListener('click', function() {
+    fetch('http://18.222.97.27:8080/teste/hello')
+        .then(response => response.json())
+        .then(data => {
+            alert('API funcionando: ' + data.message);  // Exibe a mensagem retornada pela API
+        })
+        .catch(error => showToast('Erro ao testar a API: ' + error.message));  // Exibe toast em caso de erro
 });
-*/
 
-// nova impl do botão de PDF - é um teste
+// Função para baixar o PDF
 document.getElementById('downloadPDF').addEventListener('click', function() {
     let content = '';
-
     const grupos = document.querySelectorAll('#resultado div');
     grupos.forEach(grupo => {
         content += grupo.innerText + '\n\n';
     });
 
-    fetch('https://seu-servidor.com/api/gerar-pdf', {
+    fetch('http://18.222.97.27:8080/api/gerar-pdf', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -85,7 +80,7 @@ document.getElementById('downloadPDF').addEventListener('click', function() {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Falha ao gerar o PDF.');  // Lança erro se o status da resposta não for 200
+            throw new Error('Falha ao gerar o PDF.');
         }
         return response.blob();
     })
@@ -99,10 +94,10 @@ document.getElementById('downloadPDF').addEventListener('click', function() {
         a.remove();
         window.URL.revokeObjectURL(url);
     })
-    .catch(error => showToast(error.message));  // Exibe toast se houver erro
+    .catch(error => showToast(error.message));
 });
 
-// Função simples para exibir o toast
+// Função para exibir uma mensagem de erro (toast)
 function showToast(message) {
     const toast = document.createElement('div');
     toast.innerText = message;
@@ -110,7 +105,7 @@ function showToast(message) {
     toast.style.bottom = '20px';
     toast.style.left = '50%';
     toast.style.transform = 'translateX(-50%)';
-    toast.style.backgroundColor = '#e74c3c';  // Cor de erro (vermelho)
+    toast.style.backgroundColor = '#e74c3c';
     toast.style.color = '#fff';
     toast.style.padding = '10px 20px';
     toast.style.borderRadius = '5px';
@@ -118,7 +113,6 @@ function showToast(message) {
     document.body.appendChild(toast);
 
     setTimeout(() => {
-        toast.remove();  // Remove o toast após 3 segundos
+        toast.remove();
     }, 3000);
 }
-
