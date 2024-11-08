@@ -1,4 +1,3 @@
-// Evento de sortear grupos
 document.getElementById('sortear').addEventListener('click', function() {
     const nomes = document.getElementById('nomes').value.trim().split('\n');
     const tipoDivisao = document.getElementById('groupType').value;
@@ -9,20 +8,20 @@ document.getElementById('sortear').addEventListener('click', function() {
         return;
     }
 
-    // Embaralhar nomes
     nomes.sort(() => Math.random() - 0.5);
 
     let grupos = [];
     if (tipoDivisao === 'numGrupos') {
-        grupos = dividirEmGrupos(nomes, tamanhoGrupo, 'grupos');
+        const numGrupos = tamanhoGrupo;
+        grupos = dividirEmGrupos(nomes, numGrupos, 'grupos');
     } else {
-        grupos = dividirEmGrupos(nomes, tamanhoGrupo, 'membros');
+        const numMembros = tamanhoGrupo;
+        grupos = dividirEmGrupos(nomes, numMembros, 'membros');
     }
 
     mostrarResultado(grupos);
 });
 
-// Função para dividir os nomes em grupos
 function dividirEmGrupos(nomes, tamanho, tipo) {
     let grupos = [];
     if (tipo === 'grupos') {
@@ -42,10 +41,9 @@ function dividirEmGrupos(nomes, tamanho, tipo) {
     return grupos;
 }
 
-// Função para mostrar o resultado na tela
 function mostrarResultado(grupos) {
     const resultadoDiv = document.getElementById('resultado');
-    resultadoDiv.innerHTML = '';  // Limpa o conteúdo anterior
+    resultadoDiv.innerHTML = '';
     grupos.forEach((grupo, index) => {
         const grupoDiv = document.createElement('div');
         grupoDiv.innerHTML = `<h3>Grupo ${index + 1}</h3><p>${grupo.join(', ')}</p>`;
@@ -53,19 +51,17 @@ function mostrarResultado(grupos) {
     });
 }
 
-// Função para testar a API
 document.getElementById('testeAPI').addEventListener('click', function() {
     fetch('http://18.222.97.27:8080/teste/hello')
-        .then(response => response.json())
-        .then(data => {
-            alert('API funcionando: ' + data.message);  // Exibe a mensagem retornada pela API
-        })
-        .catch(error => showToast('Erro ao testar a API: ' + error.message));  // Exibe toast em caso de erro
-});
+    .then(data => {
+        alert('API funcionando. Faça o sorteio!');
+      })
+      .catch(error => showToast('Http 500 - Internal Server Error: - Erro ao testar a API. Verifique o sistema.'));
+  });
 
-// Função para baixar o PDF
 document.getElementById('downloadPDF').addEventListener('click', function() {
     let content = '';
+
     const grupos = document.querySelectorAll('#resultado div');
     grupos.forEach(grupo => {
         content += grupo.innerText + '\n\n';
@@ -80,7 +76,7 @@ document.getElementById('downloadPDF').addEventListener('click', function() {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Falha ao gerar o PDF.');
+            throw new Error('Falha ao gerar o PDF. Faça o teste de conexão da API.'); 
         }
         return response.blob();
     })
@@ -94,10 +90,9 @@ document.getElementById('downloadPDF').addEventListener('click', function() {
         a.remove();
         window.URL.revokeObjectURL(url);
     })
-    .catch(error => showToast(error.message));
+    .catch(error => showToast(error.message)); 
 });
 
-// Função para exibir uma mensagem de erro (toast)
 function showToast(message) {
     const toast = document.createElement('div');
     toast.innerText = message;
@@ -105,7 +100,7 @@ function showToast(message) {
     toast.style.bottom = '20px';
     toast.style.left = '50%';
     toast.style.transform = 'translateX(-50%)';
-    toast.style.backgroundColor = '#e74c3c';
+    toast.style.backgroundColor = '#e74c3c';  // Cor de erro (vermelho)
     toast.style.color = '#fff';
     toast.style.padding = '10px 20px';
     toast.style.borderRadius = '5px';
@@ -113,6 +108,7 @@ function showToast(message) {
     document.body.appendChild(toast);
 
     setTimeout(() => {
-        toast.remove();
+        toast.remove(); 
     }, 3000);
 }
+

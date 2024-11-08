@@ -13,19 +13,21 @@
         <textarea id="nomes" rows="10" placeholder="Digite os nomes, um por linha"></textarea>
         
         <div class="options">
-            <label for="groupType">Tipo de divisão:</label>
+            <label for="groupType">Selecione o tipo de divisão:</label>
             <select id="groupType">
-                <option value="numGrupos">Dividir em número de grupos</option>
-                <option value="numMembros">Dividir por número de membros</option>
+                <option value="numGrupos">Por número de grupos</option>
+                <option value="numMembros">Por número de membros</option>
             </select>
-            <input type="number" id="groupSize" placeholder="Número" min="1">
+            <input type="number" id="groupSize" placeholder="Número" min="1" max="9999">
         </div>
         
         <button id="sortear">Sortear</button>
         
         <div id="resultado"></div>
         
-        <button id="downloadPDF">Baixar PDF - inoperante ainda</button>
+        <button id="downloadPDF">Baixar PDF</button>
+        <p></p>
+        <button id="testeAPI">Testar se API está Online</button>
     </div>
     
     <script src="script.js"></script>
