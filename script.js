@@ -1,25 +1,43 @@
+document.getElementById('groupType').addEventListener('change', function() {
+    const tipoDivisao = document.getElementById('groupType').value;
+    const groupSizeInput = document.getElementById('groupSize');
+    
+    if (tipoDivisao === 'sortearGanhador') {
+        groupSizeInput.style.display = 'none';
+        groupSizeInput.disabled = true;
+    } else {
+        groupSizeInput.style.display = 'block';
+        groupSizeInput.disabled = false;
+    }
+});
+
 document.getElementById('sortear').addEventListener('click', function() {
     const nomes = document.getElementById('nomes').value.trim().split('\n');
     const tipoDivisao = document.getElementById('groupType').value;
     const tamanhoGrupo = parseInt(document.getElementById('groupSize').value);
 
-    if (nomes.length === 0 || isNaN(tamanhoGrupo) || tamanhoGrupo <= 0) {
+    if (nomes.length === 0 || (tipoDivisao !== 'sortearGanhador' && (isNaN(tamanhoGrupo) || tamanhoGrupo <= 0))) {
         alert('Preencha todos os campos corretamente.');
         return;
     }
 
-    nomes.sort(() => Math.random() - 0.5);
-
-    let grupos = [];
-    if (tipoDivisao === 'numGrupos') {
-        const numGrupos = tamanhoGrupo;
-        grupos = dividirEmGrupos(nomes, numGrupos, 'grupos');
+    if (tipoDivisao === 'sortearGanhador') {
+        const sorteado = nomes[Math.floor(Math.random() * nomes.length)];
+        mostrarResultado(`O sorteado é: ${sorteado}`);
     } else {
-        const numMembros = tamanhoGrupo;
-        grupos = dividirEmGrupos(nomes, numMembros, 'membros');
-    }
+        nomes.sort(() => Math.random() - 0.5);
 
-    mostrarResultado(grupos);
+        let grupos = [];
+        if (tipoDivisao === 'numGrupos') {
+            const numGrupos = tamanhoGrupo;
+            grupos = dividirEmGrupos(nomes, numGrupos, 'grupos');
+        } else {
+            const numMembros = tamanhoGrupo;
+            grupos = dividirEmGrupos(nomes, numMembros, 'membros');
+        }
+
+        mostrarResultado(grupos);
+    }
 });
 
 function dividirEmGrupos(nomes, tamanho, tipo) {
@@ -41,23 +59,27 @@ function dividirEmGrupos(nomes, tamanho, tipo) {
     return grupos;
 }
 
-function mostrarResultado(grupos) {
+function mostrarResultado(resultado) {
     const resultadoDiv = document.getElementById('resultado');
     resultadoDiv.innerHTML = '';
-    grupos.forEach((grupo, index) => {
-        const grupoDiv = document.createElement('div');
-        grupoDiv.innerHTML = `<h3>Grupo ${index + 1}</h3><p>${grupo.join(', ')}</p>`;
-        resultadoDiv.appendChild(grupoDiv);
-    });
+    if (typeof resultado === 'string') {
+        resultadoDiv.innerHTML = `<h3>${resultado}</h3>`;
+    } else {
+        resultado.forEach((grupo, index) => {
+            const grupoDiv = document.createElement('div');
+            grupoDiv.innerHTML = `<h3>Grupo ${index + 1}</h3><p>${grupo.join(', ')}</p>`;
+            resultadoDiv.appendChild(grupoDiv);
+        });
+    }
 }
 
 document.getElementById('testeAPI').addEventListener('click', function() {
-    fetch('http://18.222.97.27:8080/teste/hello')
+    fetch('http://localhost:8080/teste/hello')
     .then(data => {
         alert('API funcionando. Faça o sorteio!');
-      })
-      .catch(error => showToast('Http 500 - Internal Server Error: - Erro ao testar a API. Verifique o sistema.'));
-  });
+    })
+    .catch(error => showToast('Http 500 - Internal Server Error: - Erro ao testar a API. Verifique o sistema.'));
+});
 
 document.getElementById('downloadPDF').addEventListener('click', function() {
     let content = '';
@@ -67,7 +89,7 @@ document.getElementById('downloadPDF').addEventListener('click', function() {
         content += grupo.innerText + '\n\n';
     });
 
-    fetch('http://18.222.97.27:8080/api/gerar-pdf', {
+    fetch('http://localhost:8080/api/gerar-pdf', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -76,7 +98,7 @@ document.getElementById('downloadPDF').addEventListener('click', function() {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Falha ao gerar o PDF. Faça o teste de conexão da API.'); 
+            throw new Error('Falha ao gerar o PDF. Faça o teste de conexão da API.');
         }
         return response.blob();
     })
@@ -90,7 +112,7 @@ document.getElementById('downloadPDF').addEventListener('click', function() {
         a.remove();
         window.URL.revokeObjectURL(url);
     })
-    .catch(error => showToast(error.message)); 
+    .catch(error => showToast(error.message));
 });
 
 function showToast(message) {
@@ -100,7 +122,7 @@ function showToast(message) {
     toast.style.bottom = '20px';
     toast.style.left = '50%';
     toast.style.transform = 'translateX(-50%)';
-    toast.style.backgroundColor = '#e74c3c';  // Cor de erro (vermelho)
+    toast.style.backgroundColor = '#e74c3c'; 
     toast.style.color = '#fff';
     toast.style.padding = '10px 20px';
     toast.style.borderRadius = '5px';
@@ -108,7 +130,6 @@ function showToast(message) {
     document.body.appendChild(toast);
 
     setTimeout(() => {
-        toast.remove(); 
+        toast.remove();
     }, 3000);
 }
-
